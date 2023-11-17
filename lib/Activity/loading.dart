@@ -9,17 +9,18 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
-  String? location;
+  String? location = 'new york';
+  String? passed_location;
   String? temp;
   String? humidity;
   double? air_speed;
   String? des;
   String? main;
   String? iconid;
-  
+  String? city_name;
 
   void startApp() async {
-    worker instance = worker(location: "Bhopal");
+    worker instance = worker(location: "$location");
     await instance.getData();
 
     temp = instance.temp;
@@ -28,6 +29,7 @@ class _LoadingState extends State<Loading> {
     des = instance.description;
     main = instance.main;
     iconid = instance.icon;
+    city_name = instance.city;
 
     Navigator.pushReplacementNamed(context, '/home', arguments: {
       'temp_value': (temp),
@@ -36,17 +38,43 @@ class _LoadingState extends State<Loading> {
       'des_value': des,
       'main_value': main,
       'icon_value': iconid,
+      'city_value': city_name,
     });
   }
 
   @override
   void initState() {
     super.initState();
+    //setState(() {});
     startApp();
   }
 
   @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+
+    //location = passed_location;
+    //startApp();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Map? search = ModalRoute.of(context)?.settings.arguments as Map?;
+
+    // void set_city() {
+    //   if (search != null && search.isNotEmpty) {
+    //     // passed_location = search['location'];
+    //     location = search['location'];
+    //     print(
+    //         "the location that is passed by search button is $passed_location");
+
+    //     //setState(() {});
+    //   }
+    // }
+
+    //set_city();
+
+    print("the location that is passed by search button is $location");
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 27, 5, 30),
       body: Center(
@@ -57,7 +85,7 @@ class _LoadingState extends State<Loading> {
             CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ),
-            SizedBox(height: 20), 
+            SizedBox(height: 20),
             Text(
               'Loading Data...',
               style: TextStyle(

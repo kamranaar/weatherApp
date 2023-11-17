@@ -1,6 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:weather/controller/controller.dart';
 import 'package:weather/worker/worker.dart';
 import 'package:weather_icons/weather_icons.dart';
 
@@ -13,6 +15,10 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   //late worker instance;
+
+  // TextEditingController searchController = new TextEditingController();
+  var userlocation = TextEditingController();
+  String uLocation = 'Delhi';
   String temperature = 'Loading...';
 
   get air_speed_value => null;
@@ -26,7 +32,7 @@ class _HomeState extends State<Home> {
   }
 
   void startApp() async {
-    worker instance = worker(location: "Delhi");
+    worker instance = worker(location: "$userlocation");
     await instance.getData();
     print("The air speed is ${instance.air_speed}");
     print("The temperature is ${instance.temp}");
@@ -40,10 +46,12 @@ class _HomeState extends State<Home> {
     Map? info = ModalRoute.of(context)?.settings.arguments
         as Map; // this line is giving error
     String icon = info['icon_value'];
+
     String temp = ((info['temp_value']).toString()).substring(0, 4);
     String air = ((info['air_speed_value']).toString());
     String tempk = info['temp_value'];
     String kelvinString = tempk; // Assuming tempk is a string
+    String? city_value_home = info['city_value'].toString();
     double kelvin = double.tryParse(kelvinString) ??
         0.0; // Convert the string to a double, default to 0.0 if the conversion fails
 
@@ -54,15 +62,16 @@ class _HomeState extends State<Home> {
         0.0; // Convert the string to a double, default to 0.0 if the conversion fails
 
     double airSpeedKMH = airSpeedMS * 3.6; // Convert from m/s to km/h
+    var myController = Get.put(MyController());
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 86, 116, 192),
-        title: Text('Weather'),
+        backgroundColor: Color.fromARGB(255, 21, 36, 15),
+        title: Text(myController.myVariable.toString()),
         centerTitle: true,
         leading: BackButton(
           onPressed: () {
-            Navigator.pushNamed(context, "/");
+            Navigator.pushNamed(context, "/loading");
           },
         ),
       ),
@@ -78,8 +87,8 @@ class _HomeState extends State<Home> {
                 0.9
               ],
                   colors: [
-                Color.fromARGB(255, 86, 116, 192),
-                Color.fromARGB(255, 205, 136, 159),
+                Color.fromARGB(255, 6, 35, 15),
+                Color.fromARGB(255, 137, 14, 67),
               ])),
 
           child: Column(
@@ -95,7 +104,16 @@ class _HomeState extends State<Home> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        print("Search Me");
+                        String ulocation = userlocation.text.toString();
+                        myController.myVariable.value =
+                            userlocation.text.toString();
+                        print("user location is .$ulocation");
+                        Navigator.pushNamed(
+                          context, "/loading",
+                          // arguments: {
+                          //   'location': ulocation,
+                          //}
+                        );
                       },
                       child: Container(
                         child: Icon(
@@ -107,11 +125,13 @@ class _HomeState extends State<Home> {
                     ),
                     Expanded(
                       child: TextField(
+                        controller: userlocation,
                         //take the input from this text field and pass it to loading as a location
                         decoration: InputDecoration(
-                            border: InputBorder.none, hintText: "Search city"),
+                            border: InputBorder.none,
+                            hintText: "Search ${myController.myVariable}"),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -137,7 +157,7 @@ class _HomeState extends State<Home> {
                                       fontWeight: FontWeight.w600),
                                 ),
                                 Text(
-                                  'Delhi',
+                                  '$city_value_home',
                                   style: TextStyle(
                                       fontSize: 25,
                                       fontWeight: FontWeight.w600),

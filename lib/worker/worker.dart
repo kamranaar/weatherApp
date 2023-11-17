@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:weather/controller/controller.dart';
 
 class worker {
   String? location;
@@ -9,24 +11,26 @@ class worker {
   String? description;
   String? main;
   String? icon;
+  String? city;
 
   worker({this.location}) {
     // Assign the location parameter to the instance variable
-    this.location = location;
-    
+    location = this.location;
   }
+  var myController = Get.put(MyController());
+  //old api e34a5eb0b4c5ff748fdf9219a63d224e
 
   Future<void> getData() async {
     try {
       http.Response response = await http.get(Uri.parse(
-          "http://api.openweathermap.org/data/2.5/weather?q=$location&appid=e34a5eb0b4c5ff748fdf9219a63d224e"));
+          "http://api.openweathermap.org/data/2.5/weather?q=${myController.myVariable}&appid=d328ebbc18a7021f8bff6b6a7ec03923"));
       Map data = jsonDecode(response.body);
 
       //Getting Temp,Humidiy
       Map temp_data = data['main'];
-      String getHumidity = temp_data['humidity'].toString();
       double getTemp = temp_data['temp'];
 
+      String getHumidity = temp_data['humidity'].toString();
 //Getting air_speed
       Map wind = data['wind'];
       double getAir_speed = wind["speed"];
@@ -45,9 +49,11 @@ class worker {
       description = getDesc;
       main = getMain_des;
       icon = getIcon.toString();
+      //city
+      city = data['name'];
 
       print(
-          'location is $location, air_speed is $air_speed, temperature is $temp');
+          'location is // worker wala $location, air_speed is $air_speed, temperature is $temp');
     } catch (e) {
       temp = 'No data available';
       humidity = 'No data available';
@@ -55,6 +61,7 @@ class worker {
       description = 'No data available';
       main = 'No data available';
       icon = '03n';
+      city = 'Not found';
     }
   }
 }
